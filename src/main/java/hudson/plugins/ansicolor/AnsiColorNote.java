@@ -43,52 +43,52 @@ public class AnsiColorNote extends ConsoleNote {
 	private String data;
 	
 	public AnsiColorNote(String data) {
-    	this.data = data;
-    }
+		this.data = data;
+	}
 
 	/**
 	 * Annotate output that contains ANSI codes and hide raw text.
 	 */
-    @Override
-    public ConsoleAnnotator annotate(Object context, MarkupText text, int charPos) {
-        try {
-        	String colorizedData = colorize(this.data);
-        	if (! colorizedData.contentEquals(this.data)) {
-	        	text.addMarkup(charPos, colorizedData);
-	        	text.addMarkup(charPos, charPos + text.length(), "<span style=\"display: none;\">", "</span>");
-        	}
+	@Override
+	public ConsoleAnnotator annotate(Object context, MarkupText text, int charPos) {
+		try {
+			String colorizedData = colorize(this.data);
+			if (! colorizedData.contentEquals(this.data)) {
+				text.addMarkup(charPos, colorizedData);
+				text.addMarkup(charPos, charPos + text.length(), "<span style=\"display: none;\">", "</span>");
+			}
 		} catch (IOException e) {
-            LOG.log(Level.WARNING, "Failed to add markup to \"" + text + "\"", e);
+			LOG.log(Level.WARNING, "Failed to add markup to \"" + text + "\"", e);
 		}
-        return null;
-    }
+		return null;
+	}
 
-    /**
-     * Process a string, convert ANSI markup to HTML.
-     * @param data string that may contain ANSI escape characters
-     * @return HTML string
-     * @throws IOException
-     */
-    public static String colorize(String data) throws IOException {
-    	ByteArrayOutputStream out = new ByteArrayOutputStream();
+	/**
+	 * Process a string, convert ANSI markup to HTML.
+	 * @param data string that may contain ANSI escape characters
+	 * @return HTML string
+	 * @throws IOException
+	 */
+	public static String colorize(String data) throws IOException {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		AnsiColorizer colorizer = new AnsiColorizer(out, Charset.defaultCharset());
 		colorizer.eol(data.getBytes(), data.length());
 		return out.toString();
-    }
+	}
 
-    public static String encodeTo(String html) {
-        try {
-            return new AnsiColorNote(html).encode();
-        } catch (IOException e) {
-            LOG.log(Level.WARNING, "Failed to serialize "+ AnsiColorNote.class, e);
-            return "";
-        }
-    }
+	public static String encodeTo(String html) {
+		try {
+			return new AnsiColorNote(html).encode();
+		} catch (IOException e) {
+			LOG.log(Level.WARNING, "Failed to serialize "+ AnsiColorNote.class, e);
+			return "";
+		}
+	}
 
-    @Extension
-    public static final class DescriptorImpl extends ConsoleAnnotationDescriptor {
-        public String getDisplayName() {
-            return "ANSI Color";
-        }
-    }
+	@Extension
+	public static final class DescriptorImpl extends ConsoleAnnotationDescriptor {
+		public String getDisplayName() {
+			return "ANSI Color";
+		}
+	}
 }
